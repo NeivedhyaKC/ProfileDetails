@@ -1,10 +1,27 @@
 import "../firebase";
 import {getDatabase, ref, onValue} from "@firebase/database";
-import {getStorage, getDownloadURL, ref as storageRef} from "firebase/storage";
-import { useEffect,useState } from "react";
 import { createTheme, ThemeProvider } from "@mui/material";
 import AppBar from "./AppBar";
+import SideBar from "./SideBar";
+import ProfileCard from "./ProfileCard";
+import ProfileDetails from "./ProfileDetails";
+import EventsCard from "./EventsCard";
+import styled from "styled-components";
+import { useEffect, useState } from "react";
 
+
+const Main = styled.main`
+    display:flex;
+    box-sizing:border-box;
+    height:100vh;
+    padding-top:75px;
+    padding-left:20px;
+    padding-right:20px;
+    align-items:center;
+    @media (max-width: 980px) {
+        flex-direction:column;
+      }
+`;
 const DisplayPage = () =>
 {
     const theme = createTheme({
@@ -19,6 +36,10 @@ const DisplayPage = () =>
             {
                 main:"#98D22F",
                 contrastText:"white"
+            },
+            white:
+            {
+                main:"#FFFFFF"
             }
         },
         '@global': {
@@ -35,29 +56,30 @@ const DisplayPage = () =>
           }
     })
 
-    const dbRef = ref(getDatabase(),"/");
-    const [image, setImage] = useState();
-
-    onValue(dbRef,(snapshot) =>
-    {
-        console.log(snapshot.val());
-    })
-
-
+    const [profileList, setProfileList] = useState([]);
+    const [selectedProfile,setSelectedProfile] = useState();
+    
     useEffect(() =>
     {
-        const fetchImage = async (location) =>
+        const dbRef = ref(getDatabase(),"/");
+        onValue(dbRef,(snapshot) =>
         {
-            const imageUrl = await getDownloadURL(storageRef(getStorage(), location));
-            setImage(imageUrl);
-        }
-        fetchImage("Female01.jpg");
+            let list = snapshot.val();
+            setProfileList(list);
+            setSelectedProfile(list[0]);
+        });
+
     },[])
 
     return (
         <ThemeProvider theme={theme}>
-            <AppBar/>
-            <img src={image} alt="f"></img>
+            <AppBar profileList = {profileList}/>
+            <Main>
+                <SideBar/>
+                <ProfileDetails profile={selectedProfile}/>
+                <ProfileCard profile={selectedProfile}/>
+                <EventsCard profileList = {profileList} setSelectedProfile={setSelectedProfile}/>
+            </Main>
         </ThemeProvider>
     )
 }

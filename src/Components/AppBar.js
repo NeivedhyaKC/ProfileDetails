@@ -8,9 +8,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import HomeIcon from '@mui/icons-material/Home';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const AppBar = () =>
+const AppBar = (props) =>
 {
     const appBar = 
     {
@@ -24,6 +24,7 @@ const AppBar = () =>
         display:"flex",
         alignItems:"center",
         gap:"10px",
+        zIndex:'10'
     }
 
     const secquraise = 
@@ -41,6 +42,21 @@ const AppBar = () =>
 
     const [anchorEl,setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
+    const [noOfMales,setNoOfMales] = useState(0);
+
+    
+    useEffect(() =>
+    {
+        let tempNoOfMales= 0;
+        for(let profile of props.profileList)
+        {
+            if(profile.Gender === "Male")
+            {
+                tempNoOfMales++;
+            }
+        }
+        setNoOfMales(tempNoOfMales);
+    },[props.profileList])
 
     return (
         <nav style={appBar}>
@@ -51,7 +67,7 @@ const AppBar = () =>
                     width:"30%",
                     marginLeft:'auto',
                     display:"intial",
-                    "@media screen and (max-width:450px)":
+                    "@media screen and (max-width:980px)":
                     {
                         display:"none"
                     }
@@ -67,16 +83,16 @@ const AppBar = () =>
             />
             <Button variant="contained" color='green'
             sx={{
-                "@media screen and (max-width:450px)":
+                "@media screen and (max-width:980px)":
                 {
                     marginLeft:"auto"
                 }
-            }}>25</Button>
-            <Button variant="contained" color='red'>25</Button>
+            }}>{noOfMales}</Button>
+            <Button variant="contained" color='red'>{props.profileList? props.profileList.length - noOfMales:null}</Button>
             <IconButton onClick={(e) =>setAnchorEl(e.currentTarget)}
             sx={{
                 display:"none",
-                "@media screen and (max-width:450px)":
+                "@media screen and (max-width:980px)":
                 {
                     display:"block"
                 }
