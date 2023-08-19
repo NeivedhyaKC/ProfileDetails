@@ -1,11 +1,11 @@
 import './App.css';
 import DisplayPage from './Components/DisplayPage';
-
+import {HashRouter} from "react-router-dom";
 function App() {
   return (
-    <div className="App">
+    <HashRouter className="App">
       <DisplayPage/>
-    </div>
+    </HashRouter>
   );
 }
 
